@@ -3,6 +3,7 @@ from gramLexer import gramLexer
 from gramListener import gramListener
 from gramParser import gramParser
 import sys
+import random
 
 class Model:
     def __init__(self):
@@ -83,6 +84,8 @@ class gramPrintListener(gramListener):
         for target_state, weight in zip(target_states, weights):
             self.model.transitions[source_state][None][target_state] = weight
 
+        
+
 def main():
     model = Model()
     lexer = gramLexer(antlr4.StdinStream())
@@ -102,6 +105,68 @@ def main():
     model.remplissage_matrices_transitions()
     print("Matrices transition :", model.matrices_transitions)
     print("Matrice transition sans action :", model.matrice_transition_sans_action)
+
+    #depart
+    # etat = next(iter(model.transitions.values()))
+    etat = 'S0'
+    try: 
+        while True:
+    
+            if None in model.transitions[etat] :
+                
+                print(f'Etat actuel = {etat}')
+                somme, somme_proba = s_proba(model.transitions[etat][None])
+                presentation_suite(etat, somme, model.transitions[etat][None])
+                etat = choix_prochaine_etat(somme_proba)
+            
+            else :   
+                print(f'Etat actuel = {etat}')        
+                actions_possibles = list(model.transitions[etat].keys())
+                choix = input(f'choisir parmi {actions_possibles} : ')
+
+                if choix == 'exit':
+                    break
+
+                while choix not in actions_possibles:
+                    choix = input(f"{choix} n'est pas dans {actions_possibles}" )
+                
+                somme, somme_proba = s_proba(model.transitions[etat][choix])
+                presentation_suite(etat, somme, model.transitions[etat][choix])
+                etat = choix_prochaine_etat(somme_proba)
+    except EOFError as e:
+        print('EOFError')
+
+    print('Merci et au revoir')
+
+
+
+def s_proba(dic):
+    somme = 0
+    somme_proba = {}
+    for e in dic.keys() :
+        somme += dic[e]
+        somme_proba[e] = somme
+
+    for cle, valeur in somme_proba.items():
+        somme_proba[cle] = valeur / somme
+    return(somme, somme_proba)
+
+
+def presentation_suite(etat, somme, dic):
+    print('Les possibles prochaines états sont')
+    for e in dic.keys() : 
+        valeur = dic[e]
+        print(f'{e} avec une proba {valeur/somme}')
+    return()
+
+
+def choix_prochaine_etat(somme_proba):
+    aleatoire  = random.random()
+    for cle, valeur in somme_proba.items() :
+        if valeur > aleatoire : 
+            return(cle)
+
+        
 
 if __name__ == '__main__':
     main()
