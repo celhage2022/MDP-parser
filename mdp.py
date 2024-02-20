@@ -4,9 +4,13 @@ from gramListener import gramListener
 from gramParser import gramParser
 import sys
 import random
+import networkx as nx
+import matplotlib.pyplot as plt
 
-class Model:
+
+class MDP:
     def __init__(self):
+        self.current_state = None
         self.states = set()
         self.actions = set()
         self.transitions = {}
@@ -15,7 +19,6 @@ class Model:
         self.matrice_transition_sans_action = {}
 
     def remplissage_dico_etats_actions(self):
-        # Parcourir tous les états du modèle
         for state in self.states:
             actions_from_state = []  # Initialiser un ensemble vide pour les actions de cet état
             # Parcourir toutes les transitions sortantes de cet état
@@ -26,7 +29,6 @@ class Model:
             self.dico_etats_actions[state] = actions_from_state
     
     def remplissage_matrices_transitions(self):
-        # Parcourir toutes les actions disponibles dans le modèle
         for action in self.actions:
             # Créer une matrice de transition pour cette action
             transition_matrix = {}
@@ -53,7 +55,158 @@ class Model:
         # Ajouter la matrice de transition pour les états sans action dans le dictionnaire matrices_transitions
         self.matrice_transition_sans_action = no_action_transition_matrix
 
+
+    def presentation_suite(self):
+        '''
+        Presente à l'utilisateur la suite dans le MDP
+        '''
+        continuer = input('Continuer ? [y/n] :')
+        if continuer == 'y':
+            continuer = True 
+            if None in self.transitions[self.current_state]: 
+                print('vous êtes sur un choix probabiliste,\n appuyez sur Entrée pour continuer :')
+            else : 
+                display = []
+                for e in self.transition[self.current_state] :
+                    display.append(e) 
+
+                print(f'Veuillez faire un choix dans : {display}')
+        elif continuer == 'n' : 
+            continuer = False
+        return(continuer)
+  
+    
+    def s_proba(self, a = None):
+        '''
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        somme : int 
+            Somme des poids des etats possibles suivants
+        somme_proba : dict
+            Dictionnaire, la clé est un état et le contenu est la sa proba au tour suivant additionné à 
+            celle de l'etat avant lui dans le dictionnaire.
+        '''
+        somme = 0
+        somme_proba = {}
+        for e in self.transitons[self.current_state][a].keys() :
+            somme += self.transitons[self.current_state][a][e]
+            somme_proba[e] = somme
+
+        for cle, valeur in somme_proba.items():
+            somme_proba[cle] = valeur / somme
+        return(somme, somme_proba)
+
+
+    def prochain_etat(self, somme_proba):
+        '''
+        Parameters
+        ----------
+        somme_proba : dict
+            Dictionnaire, la clé est un état et le contenu est la sa proba au tour suivant additionné à 
+            celle de l'etat avant lui dans le dictionnaire.
+
+        Returns
+        ----------
+        cle : str
+            Prochain etat
+        '''
+        aleatoire  = random.random()
+        for cle, valeur in somme_proba.items() :
+            if valeur > aleatoire : 
+                return(cle)
+    
+    
+    def avance(self, a = None):
+        '''
+        Fais un pas dans le MDP
+        '''
+        somme_proba = self.s_proba(a)
+        self.current_state = self.prochain_etat(somme_proba)
+        return()            
+
+    def plot_graph(self):
+        G = nx.DiGraph
+
+        list_node = []
+        list_choix = []
+
+        for etat in self.transitions :
+            G.add_node(etat, label = etat)
+            if etat != self.current_state :
+                list_node.append(etat)
         
+        for etat in self.transitions :
+            if None in self.transitions :
+                somme = self.somme(self.transitions[etat][None])
+                for node in self.transitions[etat][None].keys():
+                    G.add_edge(etat, node, 
+                               label = str(self.transitions[etat][None][node]/somme) )
+            else :
+                for choix in self.transitions[etat]:
+                    G.add_node(etat+choix, label = choix)
+                    list_choix.append(str(etat+choix))
+
+                    G.add_edge(etat, etat+choix)
+                    somme = self.somme(self.transitions[etat][choix])
+                    for p_etat in self.transitions[etat][choix].keys():
+                        G.add_edge(etat+choix, p_etat,
+                                   label = str(self.transitions[etat][choix]/somme) )
+                        
+        pos = nx.spring_layout(G)
+
+        nx.draw_networkx_nodes(G, pos, node_color='red', nodelist=[self.current_state], node_size=500, alpha=0.8)
+        nx.draw_networkx_nodes(G, pos, node_color='blue', nodelist=list_node, node_size=500, alpha=0.8)
+        nx.draw_networkx_nodes(G, pos, node_color='gray', nodelist=list_choix, node_size=250, alpha=0.8)
+
+        nx.draw_networkx_labels(G, pos, labels={i: G.nodes[i]['label'] for i in G.nodes})
+        nx.draw_networkx_edges(G, pos, width=1, edge_color='gray', connectionstyle="arc3,rad=0.1", arrowstyle='-|>')
+        nx.draw_networkx_edge_labels(G, pos, edge_labels={(i, j): G[i][j]['label'] for i, j in G.edges})
+        plt.axis('off')
+        plt.show()
+
+    def plot_graph():
+        G = nx.DiGraph()
+
+        list_node = []
+        list_choix = []
+
+        for etat in transitions:
+            G.add_node(etat, label = etat)  
+            if etat != current_state:
+                list_node.append(etat)
+
+        for etat in transitions:
+            if None in transitions[etat]:
+                total_prob = sum(transitions[etat][None].values()) 
+                for node, prob in transitions[etat][None].items():
+                    G.add_edge(etat, node, label=str(prob / total_prob))
+            else:
+                for choix, next_states in transitions[etat].items():
+                    G.add_node(etat + choix, label=choix)
+                    list_choix.append(etat + choix)
+
+                    G.add_edge(etat, etat + choix)
+                    total_prob = sum(next_states.values())
+                    for p_etat, prob in next_states.items():
+                        G.add_edge(etat + choix, p_etat, label=str(prob / total_prob))
+
+        pos = nx.spring_layout(G)
+
+        nx.draw_networkx_nodes(G, pos, node_color='red', nodelist=[current_state], node_size=500, alpha=0.8)
+        nx.draw_networkx_nodes(G, pos, node_color='blue', nodelist=list_node, node_size=500, alpha=0.8)
+        nx.draw_networkx_nodes(G, pos, node_color='gray', nodelist=list_choix, node_size=250, alpha=0.8)
+        nx.draw_networkx_edges(G, pos, width=1, edge_color='black', connectionstyle="arc3,rad=0.15", arrowstyle='-|>')
+        
+        nx.draw_networkx_labels(G, pos, labels={i: G.nodes[i]['label'] for i in G.nodes})
+        nx.draw_networkx_edge_labels(G, pos, edge_labels={(i, j): G[i][j]['label'] for i, j in G.edges if 'label' in G[i][j]})
+
+        plt.axis('off')
+        plt.show()
+        return()
+
 
 class gramPrintListener(gramListener):
     def __init__(self, model):
@@ -87,7 +240,7 @@ class gramPrintListener(gramListener):
         
 
 def main():
-    model = Model()
+    model = MDP()
     lexer = gramLexer(antlr4.StdinStream())
     stream = antlr4.CommonTokenStream(lexer)
     parser = gramParser(stream)
@@ -107,66 +260,20 @@ def main():
     print("Matrice transition sans action :", model.matrice_transition_sans_action)
 
     #depart
-    # etat = next(iter(model.transitions.values()))
-    etat = 'S0'
-    try: 
-        while True:
-    
-            if None in model.transitions[etat] :
-                
-                print(f'Etat actuel = {etat}')
-                somme, somme_proba = s_proba(model.transitions[etat][None])
-                presentation_suite(etat, somme, model.transitions[etat][None])
-                etat = choix_prochaine_etat(somme_proba)
-            
-            else :   
-                print(f'Etat actuel = {etat}')        
-                actions_possibles = list(model.transitions[etat].keys())
-                choix = input(f'choisir parmi {actions_possibles} : ')
-
-                if choix == 'exit':
-                    break
-
-                while choix not in actions_possibles:
-                    choix = input(f"{choix} n'est pas dans {actions_possibles}" )
-                
-                somme, somme_proba = s_proba(model.transitions[etat][choix])
-                presentation_suite(etat, somme, model.transitions[etat][choix])
-                etat = choix_prochaine_etat(somme_proba)
-    except EOFError as e:
-        print('EOFError')
+    model.current_state = 'S0' 
+    continuer = True
+    while continuer :
+        continuer = model.presentation_suite()
+        a = input()
+        if a ==  '':
+            model.avance()
+        else :
+            model.avance(a)
+        
+        model.plot_graph()
 
     print('Merci et au revoir')
 
-
-
-def s_proba(dic):
-    somme = 0
-    somme_proba = {}
-    for e in dic.keys() :
-        somme += dic[e]
-        somme_proba[e] = somme
-
-    for cle, valeur in somme_proba.items():
-        somme_proba[cle] = valeur / somme
-    return(somme, somme_proba)
-
-
-def presentation_suite(etat, somme, dic):
-    print('Les possibles prochaines états sont')
-    for e in dic.keys() : 
-        valeur = dic[e]
-        print(f'{e} avec une proba {valeur/somme}')
-    return()
-
-
-def choix_prochaine_etat(somme_proba):
-    aleatoire  = random.random()
-    for cle, valeur in somme_proba.items() :
-        if valeur > aleatoire : 
-            return(cle)
-
         
-
 if __name__ == '__main__':
     main()
