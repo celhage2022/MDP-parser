@@ -6,6 +6,7 @@ import sys
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
+import click
 
 
 class MDP:
@@ -14,66 +15,21 @@ class MDP:
         self.states = set()
         self.actions = set()
         self.transitions = {}
-        self.dico_etats_actions = {}
-        self.matrices_transitions = {}
-        self.matrice_transition_sans_action = {}
-
-    def remplissage_dico_etats_actions(self):
-        for state in self.states:
-            actions_from_state = []  # Initialiser un ensemble vide pour les actions de cet état
-            # Parcourir toutes les transitions sortantes de cet état
-            for action in self.transitions.get(state, {}).keys():
-                if action is not None and action in self.actions :  # Ignorer les transitions sans action
-                    actions_from_state.append(action)
-            # Ajouter les actions disponibles pour cet état dans le dictionnaire
-            self.dico_etats_actions[state] = actions_from_state
-    
-    def remplissage_matrices_transitions(self):
-        for action in self.actions:
-            # Créer une matrice de transition pour cette action
-            transition_matrix = {}
-            # Parcourir tous les états du modèle
-            for source_state in self.states:
-                # Initialiser une ligne de la matrice pour cet état source
-                transition_matrix[source_state] = {}
-                # Récupérer les transitions sortantes de cet état pour cette action
-                transitions = self.transitions.get(source_state, {}).get(action, {})
-                # Parcourir tous les états du modèle (y compris l'état source) pour remplir la ligne de la matrice
-                for target_state in self.states:
-                    # Remplir la probabilité de transition de l'état source à l'état cible
-                    transition_matrix[source_state][target_state] = transitions.get(target_state, 0)
-            # Ajouter la matrice de transition associée à l'action dans le dictionnaire matrices_transitions
-            self.matrices_transitions[action] = transition_matrix
-
-        no_action_transition_matrix = {}
-        for source_state in self.states:
-            no_action_transition_matrix[source_state] = {}
-            # Récupérer les transitions sortantes de cet état sans action
-            transitions = self.transitions.get(source_state, {}).get(None, {})
-            for target_state in self.states:
-                no_action_transition_matrix[source_state][target_state] = transitions.get(target_state, 0)
-        # Ajouter la matrice de transition pour les états sans action dans le dictionnaire matrices_transitions
-        self.matrice_transition_sans_action = no_action_transition_matrix
 
 
     def presentation_suite(self):
         '''
         Presente à l'utilisateur la suite dans le MDP
         '''
-        continuer = input('Continuer ? [y/n] :')
-        if continuer == 'y':
-            continuer = True 
-            if None in self.transitions[self.current_state]: 
-                print('vous êtes sur un choix probabiliste,\n appuyez sur Entrée pour continuer :')
-            else : 
-                display = []
-                for e in self.transition[self.current_state] :
-                    display.append(e) 
+        if None in self.transitions[self.current_state]: 
+            print('Vous êtes sur un choix probabiliste. Appuyez sur Entrée pour continuer :')
+        else : 
+            display = []
+            for e in self.transitions[self.current_state] :
+                display.append(e) 
 
-                print(f'Veuillez faire un choix dans : {display}')
-        elif continuer == 'n' : 
-            continuer = False
-        return(continuer)
+            print(f'Veuillez faire un choix dans : {display}')
+        return()
   
     
     def s_proba(self, a = None):
@@ -91,12 +47,12 @@ class MDP:
         '''
         somme = 0
         somme_proba = {}
-        for e in self.transitons[self.current_state][a].keys() :
-            somme += self.transitons[self.current_state][a][e]
+        for e in self.transitions[self.current_state][a].keys() :
+            somme += self.transitions[self.current_state][a][e]
             somme_proba[e] = somme
 
-        for cle, valeur in somme_proba.items():
-            somme_proba[cle] = valeur / somme
+        for cle in somme_proba.keys():
+            somme_proba[cle] = somme_proba[cle] / somme
         return(somme, somme_proba)
 
 
@@ -123,7 +79,7 @@ class MDP:
         '''
         Fais un pas dans le MDP
         '''
-        somme_proba = self.s_proba(a)
+        _, somme_proba = self.s_proba(a)
         self.current_state = self.prochain_etat(somme_proba)
         return()            
 
@@ -167,24 +123,25 @@ class MDP:
         plt.axis('off')
         plt.show()
 
-    def plot_graph():
+
+    def plot_graph(self):
         G = nx.DiGraph()
 
         list_node = []
         list_choix = []
 
-        for etat in transitions:
+        for etat in self.transitions:
             G.add_node(etat, label = etat)  
-            if etat != current_state:
+            if etat != self.current_state:
                 list_node.append(etat)
 
-        for etat in transitions:
-            if None in transitions[etat]:
-                total_prob = sum(transitions[etat][None].values()) 
-                for node, prob in transitions[etat][None].items():
+        for etat in self.transitions:
+            if None in self.transitions[etat]:
+                total_prob = sum(self.transitions[etat][None].values()) 
+                for node, prob in self.transitions[etat][None].items():
                     G.add_edge(etat, node, label=str(prob / total_prob))
             else:
-                for choix, next_states in transitions[etat].items():
+                for choix, next_states in self.transitions[etat].items():
                     G.add_node(etat + choix, label=choix)
                     list_choix.append(etat + choix)
 
@@ -195,7 +152,7 @@ class MDP:
 
         pos = nx.spring_layout(G)
 
-        nx.draw_networkx_nodes(G, pos, node_color='red', nodelist=[current_state], node_size=500, alpha=0.8)
+        nx.draw_networkx_nodes(G, pos, node_color='red', nodelist=[self.current_state], node_size=500, alpha=0.8)
         nx.draw_networkx_nodes(G, pos, node_color='blue', nodelist=list_node, node_size=500, alpha=0.8)
         nx.draw_networkx_nodes(G, pos, node_color='gray', nodelist=list_choix, node_size=250, alpha=0.8)
         nx.draw_networkx_edges(G, pos, width=1, edge_color='black', connectionstyle="arc3,rad=0.15", arrowstyle='-|>')
@@ -206,6 +163,23 @@ class MDP:
         plt.axis('off')
         plt.show()
         return()
+    
+    def verif_model(self):
+        for etat in self.transitions:
+            if etat not in self.states:
+                raise ValueError(f"{etat} n'est pas dans {self.states}, le fichier input comporte une erreur")
+
+        for etat in self.transitions:
+            for action in self.transitions[etat]:
+                if action is not None :
+                    if action not in self.actions:
+                        raise ValueError(f"{action} n'est pas dans {self.actions}, le fichier input comporte une erreur")
+            
+        for etat in self.transitions:
+            for action in self.transitions[etat]:
+                for cle in self.transitions[etat][action].keys():
+                    if cle not in self.states:
+                        raise ValueError(f"{cle} n'est pas dans {self.states}, le fichier input comporte une erreur")
 
 
 class gramPrintListener(gramListener):
@@ -237,11 +211,11 @@ class gramPrintListener(gramListener):
         for target_state, weight in zip(target_states, weights):
             self.model.transitions[source_state][None][target_state] = weight
 
-        
 
-def main():
+
+def parse_file(file_content):
     model = MDP()
-    lexer = gramLexer(antlr4.StdinStream())
+    lexer = gramLexer(antlr4.InputStream(file_content))
     stream = antlr4.CommonTokenStream(lexer)
     parser = gramParser(stream)
     tree = parser.program()
@@ -253,27 +227,32 @@ def main():
     print("States:", model.states)
     print("Actions:", model.actions)
     print("Transitions:", model.transitions)
-    model.remplissage_dico_etats_actions()
-    print("Dictionnaire etats actions:", model.dico_etats_actions)
-    model.remplissage_matrices_transitions()
-    print("Matrices transition :", model.matrices_transitions)
-    print("Matrice transition sans action :", model.matrice_transition_sans_action)
 
-    #depart
-    model.current_state = 'S0' 
-    continuer = True
-    while continuer :
-        continuer = model.presentation_suite()
+    model.verif_model()
+
+    model.current_state = click.prompt(f'choisir un etat de depart dans {model.states}', type=str)
+    while model.current_state not in model.states:
+        print(f"{model.current_state} n'est pas dans {model.states}")
+        model.current_state = click.prompt(f'choisir un etat de depart vraiment dans {model.states}', type=str)
+
+    nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
+
+    model.plot_graph()
+    for _ in range(nbr_tour):
+        model.presentation_suite()
         a = input()
-        if a ==  '':
+        if a == '':
             model.avance()
-        else :
+        else:
             model.avance(a)
-        
+
         model.plot_graph()
 
     print('Merci et au revoir')
 
-        
+
 if __name__ == '__main__':
-    main()
+    file_name = click.prompt('Nom du fichier input ? ', type=str)
+    with open(file_name, 'r') as file:
+        file_content = file.read()
+        parse_file(file_content)
