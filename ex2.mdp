@@ -1,0 +1,6 @@
+States S0, S1, S2;
+Actions None;
+S0 -> 5:S1 + 5:S2;
+S1 -> 2: S1 + 8:S0;
+S1 -> 1:S2+3:S0+6:S1;
+S2 -> 5:S0 + 5:S1;

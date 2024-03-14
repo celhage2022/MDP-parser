@@ -9,12 +9,13 @@ import matplotlib.pyplot as plt
 import click
 
 
-class MDP:
+class MDP:  
     def __init__(self):
         self.current_state = None
         self.states = set()
         self.actions = set()
         self.transitions = {}
+        self.pos = None
 
 
     def presentation_suite(self):
@@ -45,6 +46,9 @@ class MDP:
             Dictionnaire, la clé est un état et le contenu est la sa proba au tour suivant additionné à 
             celle de l'etat avant lui dans le dictionnaire.
         '''
+        while a not in self.transitions[self.current_state]:
+            print(f"{a} n'est pas dans {list(self.transitions[self.current_state].keys())}")
+            a = input(f'choisir vraiment dans {list(self.transitions[self.current_state].keys())}')
         somme = 0
         somme_proba = {}
         for e in self.transitions[self.current_state][a].keys() :
@@ -83,46 +87,6 @@ class MDP:
         self.current_state = self.prochain_etat(somme_proba)
         return()            
 
-    def plot_graph(self):
-        G = nx.DiGraph
-
-        list_node = []
-        list_choix = []
-
-        for etat in self.transitions :
-            G.add_node(etat, label = etat)
-            if etat != self.current_state :
-                list_node.append(etat)
-        
-        for etat in self.transitions :
-            if None in self.transitions :
-                somme = self.somme(self.transitions[etat][None])
-                for node in self.transitions[etat][None].keys():
-                    G.add_edge(etat, node, 
-                               label = str(self.transitions[etat][None][node]/somme) )
-            else :
-                for choix in self.transitions[etat]:
-                    G.add_node(etat+choix, label = choix)
-                    list_choix.append(str(etat+choix))
-
-                    G.add_edge(etat, etat+choix)
-                    somme = self.somme(self.transitions[etat][choix])
-                    for p_etat in self.transitions[etat][choix].keys():
-                        G.add_edge(etat+choix, p_etat,
-                                   label = str(self.transitions[etat][choix]/somme) )
-                        
-        pos = nx.spring_layout(G)
-
-        nx.draw_networkx_nodes(G, pos, node_color='red', nodelist=[self.current_state], node_size=500, alpha=0.8)
-        nx.draw_networkx_nodes(G, pos, node_color='blue', nodelist=list_node, node_size=500, alpha=0.8)
-        nx.draw_networkx_nodes(G, pos, node_color='gray', nodelist=list_choix, node_size=250, alpha=0.8)
-
-        nx.draw_networkx_labels(G, pos, labels={i: G.nodes[i]['label'] for i in G.nodes})
-        nx.draw_networkx_edges(G, pos, width=1, edge_color='gray', connectionstyle="arc3,rad=0.1", arrowstyle='-|>')
-        nx.draw_networkx_edge_labels(G, pos, edge_labels={(i, j): G[i][j]['label'] for i, j in G.edges})
-        plt.axis('off')
-        plt.show()
-
 
     def plot_graph(self):
         G = nx.DiGraph()
@@ -150,21 +114,26 @@ class MDP:
                     for p_etat, prob in next_states.items():
                         G.add_edge(etat + choix, p_etat, label=str(prob / total_prob))
 
-        pos = nx.spring_layout(G)
+        if self.pos is None :
+            self.pos = nx.spring_layout(G)
 
-        nx.draw_networkx_nodes(G, pos, node_color='red', nodelist=[self.current_state], node_size=500, alpha=0.8)
-        nx.draw_networkx_nodes(G, pos, node_color='blue', nodelist=list_node, node_size=500, alpha=0.8)
-        nx.draw_networkx_nodes(G, pos, node_color='gray', nodelist=list_choix, node_size=250, alpha=0.8)
-        nx.draw_networkx_edges(G, pos, width=1, edge_color='black', connectionstyle="arc3,rad=0.15", arrowstyle='-|>')
+        nx.draw_networkx_nodes(G, self.pos, node_color='red', nodelist=[self.current_state], node_size=500, alpha=0.8)
+        nx.draw_networkx_nodes(G, self.pos, node_color='blue', nodelist=list_node, node_size=500, alpha=0.8)
+        nx.draw_networkx_nodes(G, self.pos, node_color='gray', nodelist=list_choix, node_size=250, alpha=0.8)
+        nx.draw_networkx_edges(G, self.pos, width=1, edge_color='black', connectionstyle="arc3,rad=0.15", arrowstyle='-|>')
         
-        nx.draw_networkx_labels(G, pos, labels={i: G.nodes[i]['label'] for i in G.nodes})
-        nx.draw_networkx_edge_labels(G, pos, edge_labels={(i, j): G[i][j]['label'] for i, j in G.edges if 'label' in G[i][j]})
+        nx.draw_networkx_labels(G, self.pos, labels={i: G.nodes[i]['label'] for i in G.nodes})
+        nx.draw_networkx_edge_labels(G, self.pos, edge_labels={(i, j): G[i][j]['label'] for i, j in G.edges if 'label' in G[i][j]})
 
         plt.axis('off')
         plt.show()
         return()
     
     def verif_model(self):
+        '''
+        Verifie que les états et les actions sont bien déclarés dans le préambule. 
+        Verifie aussi si on modelise une chaine de Markov ou un MDP (utile pour le plot)
+        '''
         for etat in self.transitions:
             if etat not in self.states:
                 raise ValueError(f"{etat} n'est pas dans {self.states}, le fichier input comporte une erreur")
@@ -180,7 +149,7 @@ class MDP:
                 for cle in self.transitions[etat][action].keys():
                     if cle not in self.states:
                         raise ValueError(f"{cle} n'est pas dans {self.states}, le fichier input comporte une erreur")
-
+    
 
 class gramPrintListener(gramListener):
     def __init__(self, model):
