@@ -132,7 +132,7 @@ class MDP:
     def verif_model(self):
         '''
         Verifie que les états et les actions sont bien déclarés dans le préambule. 
-        Verifie aussi si on modelise une chaine de Markov ou un MDP (utile pour le plot)
+        Verifie aussi qu'on ne melange pas MDP et MC
         '''
         for etat in self.transitions:
             if etat not in self.states:
@@ -149,6 +149,12 @@ class MDP:
                 for cle in self.transitions[etat][action].keys():
                     if cle not in self.states:
                         raise ValueError(f"{cle} n'est pas dans {self.states}, le fichier input comporte une erreur")
+        
+        for etat in self.transitions:
+            if None in self.transitions[etat]:
+                if len(self.transitions[etat]) > 1:
+                    raise ValueError(f"Il y a un melange entre MC et MDP dans l'etat {etat}, le fichier input comporte une erreur")
+                
     
 
 class gramPrintListener(gramListener):
