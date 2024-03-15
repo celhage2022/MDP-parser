@@ -12,6 +12,7 @@ import copy
 
 class MDP:  
     def __init__(self):
+        self.initial_state = None
         self.current_state = None
         self.states = {}
         self.actions = set()
@@ -19,10 +20,15 @@ class MDP:
         self.pos = None
         self.hist = []
         self.RL = None
+        self.model_checking = None
         self.gamma = 1/2
         self.eps = 1
+        self.precision = 0.01
+        self.erreur = 0.01
         self.recompense = 0
         self.adversaire = None
+        self.checked_state = []
+
 
 
     def presentation_suite(self, mode_auto):
@@ -144,19 +150,33 @@ class MDP:
         '''
         _, somme_proba = self.s_proba(a)
         self.current_state = self.prochain_etat(somme_proba)
-        self.hist.append(self.current_state)
-        self.recompense += self.states[self.current_state]
+        if not self.model_checking :
+            self.hist.append(self.current_state)
+            self.recompense += self.states[self.current_state]
         return()            
 
     def initialisation(self):
-        self.current_state = click.prompt(f'choisir un etat de depart dans {list(self.states.keys())}', type=str)
-        while self.current_state not in self.states:
-            print(f"{self.current_state} n'est pas dans {list(self.states.keys())}")
-            self.current_state = click.prompt(f'choisir un etat de depart vraiment dans {list(self.states.keys())}', type=str)
+       
+        self.initial_state = click.prompt(f'choisir un etat de depart dans {list(self.states.keys())}', type=str)
+        while self.initial_state not in self.states:
+            print(f"{self.initial_state} n'est pas dans {list(self.states.keys())}")
+            self.initial_state = click.prompt(f'choisir un etat de depart vraiment dans {list(self.states.keys())}', type=str)
+        self.current_state = self.initial_state
+
         self.hist.append(self.current_state)
         self.recompense += self.states[self.current_state]
 
         nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
+        
+        self.model_checking = click.prompt('Faire modele checking ? [True/False]' , type = bool)
+        if self.model_checking :
+            rep = click.prompt(f"Sur quelle etat dans {list(self.states.keys())} ? False pour arreter.")
+            while rep != str(False) : 
+                self.checked_state.append(rep)
+                rep = click.prompt(f"Model checking sur {self.checked_state}. Ajouter un autre etat de {list(self.states.keys())} ? False pour arreter")
+            self.precision = click.prompt("Precision ? ", type = float)
+            self.erreur = click.prompt("Erreur ? ", type = float)
+
         mode_auto = click.prompt('Faire la simulation en mode auto ? [True/False]' , type = bool)
         if mode_auto : 
             self.RL = click.prompt("Faire de l'apprentissage par renforcement ? [True/False]", type = bool)
@@ -168,6 +188,37 @@ class MDP:
                 print(f"Vn = {V_new}")
                 print(f"adversaire choisi = {self.adversaire}")
         return(nbr_tour, mode_auto)
+
+
+    def check_quant(self):
+        somme_proba = {k : 0 for k in self.checked_state}
+
+        n = int(np.ceil(np.log(2)-np.log(self.erreur)/(2*self.precision)**2))
+
+        for _ in range(n):
+            res = self.simulation(n, mode_auto=True)
+            somme_proba[res] +=1
+        somme_proba = {k : v/n for k,v in somme_proba.items()}
+        print(f"Estimation d'arriver dans les états checkés : {somme_proba}")
+        return()
+
+
+    def simulation(self, nbr_tour, mode_auto = False ,plot = False, printer = False):
+        for _ in range(nbr_tour):
+            a = self.presentation_suite(mode_auto)
+            if not mode_auto :
+                a = input()
+
+            if a == '':
+                self.avance()
+            else:
+                self.avance(a)
+            if plot :
+                self.plot_graph()
+            if printer :
+                print(f"Historique = {self.hist}")
+                print(f"Recompense = {self.recompense}")
+        return(self.current_state)
 
 
     def plot_graph(self):
@@ -290,21 +341,14 @@ def parse_file(file_content):
     model.verif_model()
 
     nbr_tour, mode_auto = model.initialisation()
- 
+
+    if model.model_checking:
+        model.check_quant()
+        model.current_state = model.initial_state
+
+        
     model.plot_graph()
-    for _ in range(nbr_tour):
-        a = model.presentation_suite(mode_auto)
-        if not mode_auto :
-            a = input()
-
-        if a == '':
-            model.avance()
-        else:
-            model.avance(a)
-
-        model.plot_graph()
-        print(f"Historique = {model.hist}")
-        print(f"Recompense = {model.recompense}")
+    model.simulation(nbr_tour, mode_auto, plot = True, printer = True)
 
     print('Merci et au revoir')
 
