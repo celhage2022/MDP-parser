@@ -2,11 +2,12 @@ import antlr4
 from gramLexer import gramLexer
 from gramListener import gramListener
 from gramParser import gramParser
-import sys
+import numpy as np
 import random
 import networkx as nx
 import matplotlib.pyplot as plt
 import click
+import copy
 
 
 class MDP:  
@@ -17,6 +18,9 @@ class MDP:
         self.transitions = {}
         self.pos = None
         self.hist = []
+        self.RL = None
+        self.gamma = 1/2
+        self.eps = 1
 
 
     def presentation_suite(self, mode_auto):
@@ -40,15 +44,54 @@ class MDP:
             else :
                 a = random.choice(list(self.transitions[self.current_state].keys()))
             return(a)
-        
 
-  
+
+    def algo_it_valeurs(self):
+        r = copy.deepcopy(self.states)
+        V_old = {key: 0 for key in self.states.keys()}
+        V_new = copy.deepcopy(self.states)
+
+        while np.linalg.norm(np.array(list(V_new.values())) - np.array(list(V_old.values()))) > self.eps :
+            V_old = copy.deepcopy(V_new)
+            for etat_init in self.transitions :
+                max_somme, _ = self.recherche_action_somme(etat_init, V_new, r)
+                V_new[etat_init] = max_somme
+            
+        adversaire = {etat : None for etat in self.states.keys()}  
+        for etat in self.transitions:
+            _, adversaire[etat] = self.recherche_action_somme(etat, V_new, r)
+        
+        return(V_new, adversaire)
     
+
+    def recherche_action_somme(self, etat_init, V, r):
+        max_somme = 0
+        action_choisie = None
+
+        for action in self.transitions[etat_init]:
+            somme = r[etat_init]
+            p = self.proba(etat_init, action)
+            
+            for etat_arrive in self.transitions[etat_init][action]:
+                somme += self.gamma*p[etat_arrive]*V[etat_arrive]
+            
+            if somme>max_somme :
+                max_somme = somme
+                action_choisie = action
+
+        return(max_somme, action_choisie)
+    
+
+    def proba(self, etat_init, action):
+        somme = sum(self.transitions[etat_init][action].values())
+        p = copy.deepcopy(self.transitions[etat_init][action])
+        for k,v in p.items():
+            p[k]  = v/somme
+        return(p)
+    
+
     def s_proba(self, a = None):
         '''
-        Parameters
-        ----------
-
         Returns
         ----------
         somme : int 
@@ -177,7 +220,11 @@ class MDP:
         self.hist.append(self.current_state)
 
         nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
-        mode_auto = click.prompt('Faire la simulation en mode auto ?' , type = bool)
+        mode_auto = click.prompt('Faire la simulation en mode auto ? [True/False]' , type = bool)
+        if mode_auto : 
+            self.RL = click.prompt("Faire de l'apprentissage par renforcement ? [True/False]", type = bool)
+            self.gamma = click.prompt("Valeur de gamma pour l'algorithme d'iteration de valeurs ? [<1]", type = float)
+            self.eps = click.prompt("Valeur de epsilon pour l'lgorithme d’itération de valeurs ? ", type = float)
         return(nbr_tour, mode_auto)
 
 
