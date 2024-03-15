@@ -21,6 +21,8 @@ class MDP:
         self.RL = None
         self.gamma = 1/2
         self.eps = 1
+        self.recompense = 0
+        self.adversaire = None
 
 
     def presentation_suite(self, mode_auto):
@@ -38,11 +40,14 @@ class MDP:
 
                 print(f'Veuillez faire un choix dans : {display}')
                 return('')
-        if mode_auto :
-            if None in self.transitions[self.current_state]: 
-                a = ''
+        else :
+            if self.RL : 
+                a = self.adversaire[self.current_state]
             else :
-                a = random.choice(list(self.transitions[self.current_state].keys()))
+                if None in self.transitions[self.current_state]: 
+                    a = ''
+                else :
+                    a = random.choice(list(self.transitions[self.current_state].keys()))
             return(a)
 
 
@@ -140,7 +145,29 @@ class MDP:
         _, somme_proba = self.s_proba(a)
         self.current_state = self.prochain_etat(somme_proba)
         self.hist.append(self.current_state)
+        self.recompense += self.states[self.current_state]
         return()            
+
+    def initialisation(self):
+        self.current_state = click.prompt(f'choisir un etat de depart dans {list(self.states.keys())}', type=str)
+        while self.current_state not in self.states:
+            print(f"{self.current_state} n'est pas dans {list(self.states.keys())}")
+            self.current_state = click.prompt(f'choisir un etat de depart vraiment dans {list(self.states.keys())}', type=str)
+        self.hist.append(self.current_state)
+        self.recompense += self.states[self.current_state]
+
+        nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
+        mode_auto = click.prompt('Faire la simulation en mode auto ? [True/False]' , type = bool)
+        if mode_auto : 
+            self.RL = click.prompt("Faire de l'apprentissage par renforcement ? [True/False]", type = bool)
+            if self.RL :
+                self.gamma = click.prompt("Valeur de gamma pour l'algorithme d'iteration de valeurs ? [<1]", type = float)
+                self.eps = click.prompt("Valeur de epsilon pour l'lgorithme d’itération de valeurs ? ", type = float)
+
+                V_new, self.adversaire = self.algo_it_valeurs()
+                print(f"Vn = {V_new}")
+                print(f"adversaire choisi = {self.adversaire}")
+        return(nbr_tour, mode_auto)
 
 
     def plot_graph(self):
@@ -184,7 +211,7 @@ class MDP:
         plt.show()
         return()
     
-
+    
     def verif_model(self):
         '''
         Verifie que les états et les actions sont bien déclarés dans le préambule. 
@@ -210,23 +237,6 @@ class MDP:
             if None in self.transitions[etat]:
                 if len(self.transitions[etat]) > 1:
                     raise ValueError(f"Il y a un melange entre MC et MDP dans l'etat {etat}, le fichier input comporte une erreur")
-
-
-    def initialisation(self):
-        self.current_state = click.prompt(f'choisir un etat de depart dans {list(self.states.keys())}', type=str)
-        while self.current_state not in self.states:
-            print(f"{self.current_state} n'est pas dans {list(self.states.keys())}")
-            self.current_state = click.prompt(f'choisir un etat de depart vraiment dans {list(self.states.keys())}', type=str)
-        self.hist.append(self.current_state)
-
-        nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
-        mode_auto = click.prompt('Faire la simulation en mode auto ? [True/False]' , type = bool)
-        if mode_auto : 
-            self.RL = click.prompt("Faire de l'apprentissage par renforcement ? [True/False]", type = bool)
-            self.gamma = click.prompt("Valeur de gamma pour l'algorithme d'iteration de valeurs ? [<1]", type = float)
-            self.eps = click.prompt("Valeur de epsilon pour l'lgorithme d’itération de valeurs ? ", type = float)
-        return(nbr_tour, mode_auto)
-
 
 
 class gramPrintListener(gramListener):
@@ -294,6 +304,7 @@ def parse_file(file_content):
 
         model.plot_graph()
         print(f"Historique = {model.hist}")
+        print(f"Recompense = {model.recompense}")
 
     print('Merci et au revoir')
 
