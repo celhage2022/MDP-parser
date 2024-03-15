@@ -16,21 +16,29 @@ class MDP:
         self.actions = set()
         self.transitions = {}
         self.pos = None
+        self.hist = []
 
 
-    def presentation_suite(self):
+    def presentation_suite(self, mode_auto):
         '''
         Presente à l'utilisateur la suite dans le MDP
         '''
-        if None in self.transitions[self.current_state]: 
-            print('Vous êtes sur un choix probabiliste. Appuyez sur Entrée pour continuer :')
-        else : 
-            display = []
-            for e in self.transitions[self.current_state] :
-                display.append(e) 
+        if not mode_auto :
+            if None in self.transitions[self.current_state]: 
+                print('Vous êtes sur un choix probabiliste. Appuyez sur Entrée pour continuer :')
+            else : 
+                display = []
+                for e in self.transitions[self.current_state] :
+                    display.append(e) 
 
-            print(f'Veuillez faire un choix dans : {display}')
-        return()
+                print(f'Veuillez faire un choix dans : {display}')
+                return('')
+        if mode_auto :
+            if None in self.transitions[self.current_state]: 
+                a = ''
+            else :
+                a = random.choice(list(self.transitions[self.current_state].keys()))
+            return(a)
   
     
     def s_proba(self, a = None):
@@ -83,6 +91,7 @@ class MDP:
         '''
         Fais un pas dans le MDP
         '''
+        self.hist.append(self.current_state)
         _, somme_proba = self.s_proba(a)
         self.current_state = self.prochain_etat(somme_proba)
         return()            
@@ -213,11 +222,14 @@ def parse_file(file_content):
         model.current_state = click.prompt(f'choisir un etat de depart vraiment dans {list(model.states.keys())}', type=str)
 
     nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
+    mode_auto = click.prompt('Faire la simulation en mode auto ?' , type = bool)
 
     model.plot_graph()
     for _ in range(nbr_tour):
-        model.presentation_suite()
-        a = input()
+        a = model.presentation_suite(mode_auto)
+        if not mode_auto :
+            a = input()
+
         if a == '':
             model.avance()
         else:
