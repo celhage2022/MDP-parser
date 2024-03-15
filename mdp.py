@@ -12,7 +12,7 @@ import click
 class MDP:  
     def __init__(self):
         self.current_state = None
-        self.states = set()
+        self.states = {}
         self.actions = set()
         self.transitions = {}
         self.pos = None
@@ -162,8 +162,10 @@ class gramPrintListener(gramListener):
         self.model = model
 
     def enterDefstates(self, ctx):
-        for state in ctx.ID():
-            self.model.states.add(str(state))
+        for state_def in ctx.stateDef():
+            state_name = str(state_def.ID())
+            state_value = int(state_def.INT().getText())
+            self.model.states[state_name] = state_value
 
     def enterDefactions(self, ctx):
         for action in ctx.ID():
@@ -205,10 +207,10 @@ def parse_file(file_content):
 
     model.verif_model()
 
-    model.current_state = click.prompt(f'choisir un etat de depart dans {model.states}', type=str)
+    model.current_state = click.prompt(f'choisir un etat de depart dans {list(model.states.keys())}', type=str)
     while model.current_state not in model.states:
-        print(f"{model.current_state} n'est pas dans {model.states}")
-        model.current_state = click.prompt(f'choisir un etat de depart vraiment dans {model.states}', type=str)
+        print(f"{model.current_state} n'est pas dans {list(model.states.keys())}")
+        model.current_state = click.prompt(f'choisir un etat de depart vraiment dans {list(model.states.keys())}', type=str)
 
     nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
 

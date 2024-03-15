@@ -1,42 +1,43 @@
-# Generated from gram.g4 by ANTLR 4.11.1
+# Generated from gram.g4 by ANTLR 4.7.2
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO
+from typing.io import TextIO
 import sys
-if sys.version_info[1] > 5:
-	from typing import TextIO
-else:
-	from typing.io import TextIO
 
 def serializedATN():
-    return [
-        4,1,13,88,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,
-        6,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,5,1,24,8,1,10,1,12,1,27,9,
-        1,1,1,1,1,1,2,1,2,1,2,1,2,5,2,35,8,2,10,2,12,2,38,9,2,1,2,1,2,1,
-        3,1,3,5,3,44,8,3,10,3,12,3,47,9,3,1,4,1,4,3,4,51,8,4,1,5,1,5,1,5,
-        1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,1,5,5,5,65,8,5,10,5,12,5,68,9,5,
-        1,5,1,5,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,1,6,5,6,81,8,6,10,6,12,6,
-        84,9,6,1,6,1,6,1,6,0,0,7,0,2,4,6,8,10,12,0,0,86,0,14,1,0,0,0,2,19,
-        1,0,0,0,4,30,1,0,0,0,6,41,1,0,0,0,8,50,1,0,0,0,10,52,1,0,0,0,12,
-        71,1,0,0,0,14,15,3,2,1,0,15,16,3,4,2,0,16,17,3,6,3,0,17,18,5,0,0,
-        1,18,1,1,0,0,0,19,20,5,1,0,0,20,25,5,12,0,0,21,22,5,7,0,0,22,24,
-        5,12,0,0,23,21,1,0,0,0,24,27,1,0,0,0,25,23,1,0,0,0,25,26,1,0,0,0,
-        26,28,1,0,0,0,27,25,1,0,0,0,28,29,5,6,0,0,29,3,1,0,0,0,30,31,5,2,
-        0,0,31,36,5,12,0,0,32,33,5,7,0,0,33,35,5,12,0,0,34,32,1,0,0,0,35,
-        38,1,0,0,0,36,34,1,0,0,0,36,37,1,0,0,0,37,39,1,0,0,0,38,36,1,0,0,
-        0,39,40,5,6,0,0,40,5,1,0,0,0,41,45,3,8,4,0,42,44,3,8,4,0,43,42,1,
-        0,0,0,44,47,1,0,0,0,45,43,1,0,0,0,45,46,1,0,0,0,46,7,1,0,0,0,47,
-        45,1,0,0,0,48,51,3,10,5,0,49,51,3,12,6,0,50,48,1,0,0,0,50,49,1,0,
-        0,0,51,9,1,0,0,0,52,53,5,12,0,0,53,54,5,9,0,0,54,55,5,12,0,0,55,
-        56,5,10,0,0,56,57,5,5,0,0,57,58,5,11,0,0,58,59,5,4,0,0,59,66,5,12,
-        0,0,60,61,5,8,0,0,61,62,5,11,0,0,62,63,5,4,0,0,63,65,5,12,0,0,64,
-        60,1,0,0,0,65,68,1,0,0,0,66,64,1,0,0,0,66,67,1,0,0,0,67,69,1,0,0,
-        0,68,66,1,0,0,0,69,70,5,6,0,0,70,11,1,0,0,0,71,72,5,12,0,0,72,73,
-        5,5,0,0,73,74,5,11,0,0,74,75,5,4,0,0,75,82,5,12,0,0,76,77,5,8,0,
-        0,77,78,5,11,0,0,78,79,5,4,0,0,79,81,5,12,0,0,80,76,1,0,0,0,81,84,
-        1,0,0,0,82,80,1,0,0,0,82,83,1,0,0,0,83,85,1,0,0,0,84,82,1,0,0,0,
-        85,86,5,6,0,0,86,13,1,0,0,0,6,25,36,45,50,66,82
-    ]
+    with StringIO() as buf:
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17")
+        buf.write("`\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b")
+        buf.write("\t\b\4\t\t\t\3\2\3\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\7\3\34")
+        buf.write("\n\3\f\3\16\3\37\13\3\3\3\3\3\3\4\3\4\3\4\3\4\3\5\3\5")
+        buf.write("\3\5\3\5\7\5+\n\5\f\5\16\5.\13\5\3\5\3\5\3\6\3\6\7\6\64")
+        buf.write("\n\6\f\6\16\6\67\13\6\3\7\3\7\5\7;\n\7\3\b\3\b\3\b\3\b")
+        buf.write("\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\7\bI\n\b\f\b\16\bL\13")
+        buf.write("\b\3\b\3\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t\7\tY\n")
+        buf.write("\t\f\t\16\t\\\13\t\3\t\3\t\3\t\2\2\n\2\4\6\b\n\f\16\20")
+        buf.write("\2\2\2]\2\22\3\2\2\2\4\27\3\2\2\2\6\"\3\2\2\2\b&\3\2\2")
+        buf.write("\2\n\61\3\2\2\2\f:\3\2\2\2\16<\3\2\2\2\20O\3\2\2\2\22")
+        buf.write("\23\5\4\3\2\23\24\5\b\5\2\24\25\5\n\6\2\25\26\7\2\2\3")
+        buf.write("\26\3\3\2\2\2\27\30\7\3\2\2\30\35\5\6\4\2\31\32\7\t\2")
+        buf.write("\2\32\34\5\6\4\2\33\31\3\2\2\2\34\37\3\2\2\2\35\33\3\2")
+        buf.write("\2\2\35\36\3\2\2\2\36 \3\2\2\2\37\35\3\2\2\2 !\7\b\2\2")
+        buf.write("!\5\3\2\2\2\"#\7\16\2\2#$\7\6\2\2$%\7\r\2\2%\7\3\2\2\2")
+        buf.write("&\'\7\4\2\2\',\7\16\2\2()\7\t\2\2)+\7\16\2\2*(\3\2\2\2")
+        buf.write("+.\3\2\2\2,*\3\2\2\2,-\3\2\2\2-/\3\2\2\2.,\3\2\2\2/\60")
+        buf.write("\7\b\2\2\60\t\3\2\2\2\61\65\5\f\7\2\62\64\5\f\7\2\63\62")
+        buf.write("\3\2\2\2\64\67\3\2\2\2\65\63\3\2\2\2\65\66\3\2\2\2\66")
+        buf.write("\13\3\2\2\2\67\65\3\2\2\28;\5\16\b\29;\5\20\t\2:8\3\2")
+        buf.write("\2\2:9\3\2\2\2;\r\3\2\2\2<=\7\16\2\2=>\7\13\2\2>?\7\16")
+        buf.write("\2\2?@\7\f\2\2@A\7\7\2\2AB\7\r\2\2BC\7\6\2\2CJ\7\16\2")
+        buf.write("\2DE\7\n\2\2EF\7\r\2\2FG\7\6\2\2GI\7\16\2\2HD\3\2\2\2")
+        buf.write("IL\3\2\2\2JH\3\2\2\2JK\3\2\2\2KM\3\2\2\2LJ\3\2\2\2MN\7")
+        buf.write("\b\2\2N\17\3\2\2\2OP\7\16\2\2PQ\7\7\2\2QR\7\r\2\2RS\7")
+        buf.write("\6\2\2SZ\7\16\2\2TU\7\n\2\2UV\7\r\2\2VW\7\6\2\2WY\7\16")
+        buf.write("\2\2XT\3\2\2\2Y\\\3\2\2\2ZX\3\2\2\2Z[\3\2\2\2[]\3\2\2")
+        buf.write("\2\\Z\3\2\2\2]^\7\b\2\2^\21\3\2\2\2\b\35,\65:JZ")
+        return buf.getvalue()
+
 
 class gramParser ( Parser ):
 
@@ -57,13 +58,14 @@ class gramParser ( Parser ):
 
     RULE_program = 0
     RULE_defstates = 1
-    RULE_defactions = 2
-    RULE_transitions = 3
-    RULE_trans = 4
-    RULE_transact = 5
-    RULE_transnoact = 6
+    RULE_stateDef = 2
+    RULE_defactions = 3
+    RULE_transitions = 4
+    RULE_trans = 5
+    RULE_transact = 6
+    RULE_transnoact = 7
 
-    ruleNames =  [ "program", "defstates", "defactions", "transitions", 
+    ruleNames =  [ "program", "defstates", "stateDef", "defactions", "transitions", 
                    "trans", "transact", "transnoact" ]
 
     EOF = Token.EOF
@@ -83,15 +85,13 @@ class gramParser ( Parser ):
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
-        self.checkVersion("4.11.1")
+        self.checkVersion("4.7.2")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
 
 
-
     class ProgramContext(ParserRuleContext):
-        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -132,13 +132,13 @@ class gramParser ( Parser ):
         self.enterRule(localctx, 0, self.RULE_program)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 14
-            self.defstates()
-            self.state = 15
-            self.defactions()
             self.state = 16
-            self.transitions()
+            self.defstates()
             self.state = 17
+            self.defactions()
+            self.state = 18
+            self.transitions()
+            self.state = 19
             self.match(gramParser.EOF)
         except RecognitionException as re:
             localctx.exception = re
@@ -148,9 +148,7 @@ class gramParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class DefstatesContext(ParserRuleContext):
-        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -159,11 +157,12 @@ class gramParser ( Parser ):
         def STATES(self):
             return self.getToken(gramParser.STATES, 0)
 
-        def ID(self, i:int=None):
+        def stateDef(self, i:int=None):
             if i is None:
-                return self.getTokens(gramParser.ID)
+                return self.getTypedRuleContexts(gramParser.StateDefContext)
             else:
-                return self.getToken(gramParser.ID, i)
+                return self.getTypedRuleContext(gramParser.StateDefContext,i)
+
 
         def SEMI(self):
             return self.getToken(gramParser.SEMI, 0)
@@ -195,23 +194,23 @@ class gramParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 19
+            self.state = 21
             self.match(gramParser.STATES)
-            self.state = 20
-            self.match(gramParser.ID)
-            self.state = 25
+            self.state = 22
+            self.stateDef()
+            self.state = 27
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==7:
-                self.state = 21
+            while _la==gramParser.VIRG:
+                self.state = 23
                 self.match(gramParser.VIRG)
-                self.state = 22
-                self.match(gramParser.ID)
-                self.state = 27
+                self.state = 24
+                self.stateDef()
+                self.state = 29
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 28
+            self.state = 30
             self.match(gramParser.SEMI)
         except RecognitionException as re:
             localctx.exception = re
@@ -221,9 +220,56 @@ class gramParser ( Parser ):
             self.exitRule()
         return localctx
 
+    class StateDefContext(ParserRuleContext):
+
+        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+            super().__init__(parent, invokingState)
+            self.parser = parser
+
+        def ID(self):
+            return self.getToken(gramParser.ID, 0)
+
+        def DPOINT(self):
+            return self.getToken(gramParser.DPOINT, 0)
+
+        def INT(self):
+            return self.getToken(gramParser.INT, 0)
+
+        def getRuleIndex(self):
+            return gramParser.RULE_stateDef
+
+        def enterRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "enterStateDef" ):
+                listener.enterStateDef(self)
+
+        def exitRule(self, listener:ParseTreeListener):
+            if hasattr( listener, "exitStateDef" ):
+                listener.exitStateDef(self)
+
+
+
+
+    def stateDef(self):
+
+        localctx = gramParser.StateDefContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 4, self.RULE_stateDef)
+        try:
+            self.enterOuterAlt(localctx, 1)
+            self.state = 32
+            self.match(gramParser.ID)
+            self.state = 33
+            self.match(gramParser.DPOINT)
+            self.state = 34
+            self.match(gramParser.INT)
+        except RecognitionException as re:
+            localctx.exception = re
+            self._errHandler.reportError(self, re)
+            self._errHandler.recover(self, re)
+        finally:
+            self.exitRule()
+        return localctx
 
     class DefactionsContext(ParserRuleContext):
-        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -264,27 +310,27 @@ class gramParser ( Parser ):
     def defactions(self):
 
         localctx = gramParser.DefactionsContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_defactions)
+        self.enterRule(localctx, 6, self.RULE_defactions)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 30
-            self.match(gramParser.ACTIONS)
-            self.state = 31
-            self.match(gramParser.ID)
             self.state = 36
+            self.match(gramParser.ACTIONS)
+            self.state = 37
+            self.match(gramParser.ID)
+            self.state = 42
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==7:
-                self.state = 32
-                self.match(gramParser.VIRG)
-                self.state = 33
-                self.match(gramParser.ID)
+            while _la==gramParser.VIRG:
                 self.state = 38
+                self.match(gramParser.VIRG)
+                self.state = 39
+                self.match(gramParser.ID)
+                self.state = 44
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 39
+            self.state = 45
             self.match(gramParser.SEMI)
         except RecognitionException as re:
             localctx.exception = re
@@ -294,9 +340,7 @@ class gramParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class TransitionsContext(ParserRuleContext):
-        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -326,19 +370,19 @@ class gramParser ( Parser ):
     def transitions(self):
 
         localctx = gramParser.TransitionsContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_transitions)
+        self.enterRule(localctx, 8, self.RULE_transitions)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 41
+            self.state = 47
             self.trans()
-            self.state = 45
+            self.state = 51
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==12:
-                self.state = 42
+            while _la==gramParser.ID:
+                self.state = 48
                 self.trans()
-                self.state = 47
+                self.state = 53
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -350,9 +394,7 @@ class gramParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class TransContext(ParserRuleContext):
-        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -383,20 +425,20 @@ class gramParser ( Parser ):
     def trans(self):
 
         localctx = gramParser.TransContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_trans)
+        self.enterRule(localctx, 10, self.RULE_trans)
         try:
-            self.state = 50
+            self.state = 56
             self._errHandler.sync(self)
             la_ = self._interp.adaptivePredict(self._input,3,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 48
+                self.state = 54
                 self.transact()
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 49
+                self.state = 55
                 self.transnoact()
                 pass
 
@@ -409,9 +451,7 @@ class gramParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class TransactContext(ParserRuleContext):
-        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -470,43 +510,43 @@ class gramParser ( Parser ):
     def transact(self):
 
         localctx = gramParser.TransactContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_transact)
+        self.enterRule(localctx, 12, self.RULE_transact)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 52
-            self.match(gramParser.ID)
-            self.state = 53
-            self.match(gramParser.LCROCH)
-            self.state = 54
-            self.match(gramParser.ID)
-            self.state = 55
-            self.match(gramParser.RCROCH)
-            self.state = 56
-            self.match(gramParser.FLECHE)
-            self.state = 57
-            self.match(gramParser.INT)
             self.state = 58
-            self.match(gramParser.DPOINT)
-            self.state = 59
             self.match(gramParser.ID)
-            self.state = 66
+            self.state = 59
+            self.match(gramParser.LCROCH)
+            self.state = 60
+            self.match(gramParser.ID)
+            self.state = 61
+            self.match(gramParser.RCROCH)
+            self.state = 62
+            self.match(gramParser.FLECHE)
+            self.state = 63
+            self.match(gramParser.INT)
+            self.state = 64
+            self.match(gramParser.DPOINT)
+            self.state = 65
+            self.match(gramParser.ID)
+            self.state = 72
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==8:
-                self.state = 60
+            while _la==gramParser.PLUS:
+                self.state = 66
                 self.match(gramParser.PLUS)
-                self.state = 61
+                self.state = 67
                 self.match(gramParser.INT)
-                self.state = 62
-                self.match(gramParser.DPOINT)
-                self.state = 63
-                self.match(gramParser.ID)
                 self.state = 68
+                self.match(gramParser.DPOINT)
+                self.state = 69
+                self.match(gramParser.ID)
+                self.state = 74
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 69
+            self.state = 75
             self.match(gramParser.SEMI)
         except RecognitionException as re:
             localctx.exception = re
@@ -516,9 +556,7 @@ class gramParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class TransnoactContext(ParserRuleContext):
-        __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
@@ -571,37 +609,37 @@ class gramParser ( Parser ):
     def transnoact(self):
 
         localctx = gramParser.TransnoactContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 12, self.RULE_transnoact)
+        self.enterRule(localctx, 14, self.RULE_transnoact)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 71
+            self.state = 77
             self.match(gramParser.ID)
-            self.state = 72
+            self.state = 78
             self.match(gramParser.FLECHE)
-            self.state = 73
+            self.state = 79
             self.match(gramParser.INT)
-            self.state = 74
+            self.state = 80
             self.match(gramParser.DPOINT)
-            self.state = 75
+            self.state = 81
             self.match(gramParser.ID)
-            self.state = 82
+            self.state = 88
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while _la==8:
-                self.state = 76
+            while _la==gramParser.PLUS:
+                self.state = 82
                 self.match(gramParser.PLUS)
-                self.state = 77
+                self.state = 83
                 self.match(gramParser.INT)
-                self.state = 78
-                self.match(gramParser.DPOINT)
-                self.state = 79
-                self.match(gramParser.ID)
                 self.state = 84
+                self.match(gramParser.DPOINT)
+                self.state = 85
+                self.match(gramParser.ID)
+                self.state = 90
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 85
+            self.state = 91
             self.match(gramParser.SEMI)
         except RecognitionException as re:
             localctx.exception = re
@@ -610,3 +648,8 @@ class gramParser ( Parser ):
         finally:
             self.exitRule()
         return localctx
+
+
+
+
+
