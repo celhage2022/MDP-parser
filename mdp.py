@@ -332,8 +332,12 @@ def parse_file(file_content):
     printer = gramPrintListener(model)
     walker = antlr4.ParseTreeWalker()
     walker.walk(printer, tree)
+    return(model)
 
-    # Afficher les informations collectées
+
+def main(file_content):
+    model = parse_file(file_content)
+
     print("States:", model.states)
     print("Actions:", model.actions)
     print("Transitions:", model.transitions)
@@ -346,15 +350,16 @@ def parse_file(file_content):
         model.check_quant()
         model.current_state = model.initial_state
 
-        
     model.plot_graph()
     model.simulation(nbr_tour, mode_auto, plot = True, printer = True)
 
     print('Merci et au revoir')
+    return(0)
+
 
 
 if __name__ == '__main__':
     file_name = click.prompt('Nom du fichier input ? ', type=str)
     with open(file_name, 'r') as file:
         file_content = file.read()
-        parse_file(file_content)
+        main(file_content)
