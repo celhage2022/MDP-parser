@@ -21,7 +21,8 @@ class MDP:
 
     def presentation_suite(self, mode_auto):
         '''
-        Presente à l'utilisateur la suite dans le MDP
+        Presente à l'utilisateur la suite dans le MDP quand pas en mode auto
+        En mode auto, chosisit l'etape suivante
         '''
         if not mode_auto :
             if None in self.transitions[self.current_state]: 
@@ -39,6 +40,8 @@ class MDP:
             else :
                 a = random.choice(list(self.transitions[self.current_state].keys()))
             return(a)
+        
+
   
     
     def s_proba(self, a = None):
@@ -89,11 +92,11 @@ class MDP:
     
     def avance(self, a = None):
         '''
-        Fais un pas dans le MDP
+        Fais un pas dans le MDP ou MC
         '''
-        self.hist.append(self.current_state)
         _, somme_proba = self.s_proba(a)
         self.current_state = self.prochain_etat(somme_proba)
+        self.hist.append(self.current_state)
         return()            
 
 
@@ -138,6 +141,7 @@ class MDP:
         plt.show()
         return()
     
+
     def verif_model(self):
         '''
         Verifie que les états et les actions sont bien déclarés dans le préambule. 
@@ -163,8 +167,20 @@ class MDP:
             if None in self.transitions[etat]:
                 if len(self.transitions[etat]) > 1:
                     raise ValueError(f"Il y a un melange entre MC et MDP dans l'etat {etat}, le fichier input comporte une erreur")
-                
-    
+
+
+    def initialisation(self):
+        self.current_state = click.prompt(f'choisir un etat de depart dans {list(self.states.keys())}', type=str)
+        while self.current_state not in self.states:
+            print(f"{self.current_state} n'est pas dans {list(self.states.keys())}")
+            self.current_state = click.prompt(f'choisir un etat de depart vraiment dans {list(self.states.keys())}', type=str)
+        self.hist.append(self.current_state)
+
+        nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
+        mode_auto = click.prompt('Faire la simulation en mode auto ?' , type = bool)
+        return(nbr_tour, mode_auto)
+
+
 
 class gramPrintListener(gramListener):
     def __init__(self, model):
@@ -216,14 +232,8 @@ def parse_file(file_content):
 
     model.verif_model()
 
-    model.current_state = click.prompt(f'choisir un etat de depart dans {list(model.states.keys())}', type=str)
-    while model.current_state not in model.states:
-        print(f"{model.current_state} n'est pas dans {list(model.states.keys())}")
-        model.current_state = click.prompt(f'choisir un etat de depart vraiment dans {list(model.states.keys())}', type=str)
-
-    nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
-    mode_auto = click.prompt('Faire la simulation en mode auto ?' , type = bool)
-
+    nbr_tour, mode_auto = model.initialisation()
+ 
     model.plot_graph()
     for _ in range(nbr_tour):
         a = model.presentation_suite(mode_auto)
@@ -236,6 +246,7 @@ def parse_file(file_content):
             model.avance(a)
 
         model.plot_graph()
+        print(f"Historique = {model.hist}")
 
     print('Merci et au revoir')
 
