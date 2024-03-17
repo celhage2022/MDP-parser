@@ -8,6 +8,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import click
 import copy
+import time
 
 
 class MDP:
@@ -143,13 +144,13 @@ class MDP:
                 return(cle)
     
     
-    def avance(self, a = None, model_checking = False):
+    def avance(self, a = None, model_checked = False):
         '''
         Fais un pas dans le MDP ou MC
         '''
         _, somme_proba = self.s_proba(a)
         self.current_state = self.prochain_etat(somme_proba)
-        if not model_checking :
+        if not model_checked :
             self.hist.append(self.current_state)
             self.recompense += self.states[self.current_state]
         return()            
@@ -166,10 +167,10 @@ class MDP:
         self.hist.append(self.current_state)
         self.recompense += self.states[self.current_state]
 
-        nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
+        nbr_tour = click.prompt('Combien de transitions voulez vous faire ? ', type=int)
         
-        model_checking = click.prompt('Faire modele checking ? [True/False]' , type = bool)
-        if model_checking :
+        model_checked = click.prompt('Faire modele checking ? [True/False]' , type = bool)
+        if model_checked :
             rep = click.prompt(f"Sur quelle etat dans {list(self.states.keys())} ? False pour arreter.")
             while rep != str(False) : 
                 self.checked_state.append(rep)
@@ -184,32 +185,75 @@ class MDP:
                 self.gamma = click.prompt("Valeur de gamma pour l'algorithme d'iteration de valeurs ? [<1]", type = float)
                 self.eps = click.prompt("Valeur de epsilon pour l'lgorithme d’itération de valeurs ? ", type = float)
            
-        return(nbr_tour, mode_auto, model_checking)
+        return(nbr_tour, mode_auto, model_checked)
 
 
-    def check_quant(self, nbr_tour):
+    def model_checking(self, nbr_tour):
+        res_quant = self.SMC_quant(nbr_tour)
+        res_qual = self.SMC_qual(nbr_tour)
+        return(res_quant, res_qual)
+    
+
+    def SMC_quant(self, nbr_tour):
         somme_proba = {k : 0 for k in self.checked_state}
 
         n = int(np.ceil(np.log(2)-np.log(self.erreur)/(2*self.precision)**2))
 
         for _ in range(n):
-            res = self.simulation(nbr_tour, mode_auto=True, model_checking=True)
+            res = self.simulation(nbr_tour, mode_auto=True, model_checked=True)
             somme_proba[res] +=1
         somme_proba = {k : v/n for k,v in somme_proba.items()}
-        print(f"Estimation d'arriver dans les états checkés : {somme_proba}")
-        return()
+        return(somme_proba)
+    
+
+    def SMC_qual(self, nbr_tour, alpha = 0.01, beta = 0.01):
+
+        DM = {k : 0 for k in self.checked_state}
+        m = 0
+        SPRT_result = {k : None for k in self.checked_state}
+        depart = time.time()
+        while None in SPRT_result.values() :
+            m +=1
+            res = self.simulation(nbr_tour, mode_auto = True, model_checked  = True)
+            DM[res] +=1
+            for k in DM.keys() :
+                if SPRT_result[k] is None :
+                    SPRT_result[k] = self.SPRT(m, DM[k], alpha, beta, self.precision)
+
+            duree = time.time() - depart
+            if duree > 3 :
+                break
+
+        return(SPRT_result)
+
+    
+    def SPRT(self, m, dm, alpha, beta, precision):
+        A = (1-beta)/alpha
+        B = beta/(1-alpha)
+        
+        gamma0 = dm/m+precision
+        gamma1 = dm/m-precision
+
+        if (gamma0**dm)*((1-gamma0)**(m-dm)) != 0 :
+            Rm = ((gamma1**dm)*((1-gamma1)**(m-dm)))/((gamma0**dm)*((1-gamma0)**(m-dm)))
+            if Rm >= A :
+                return('H1')
+            elif Rm <= B:
+                return('H2')
+        
+        return(None)
 
 
-    def simulation(self, nbr_tour, mode_auto = False, model_checking = False ,plot = False, printer = False):
+    def simulation(self, nbr_tour, mode_auto = False, model_checked = False ,plot = False, printer = False):
         for _ in range(nbr_tour):
             a = self.presentation_suite(mode_auto)
             if not mode_auto :
                 a = input()
 
             if a == '':
-                self.avance(model_checking=model_checking)
+                self.avance(model_checked=model_checked)
             else:
-                self.avance(a = a, model_checking=model_checking)
+                self.avance(a, model_checked)
             if plot :
                 self.plot_graph()
             if printer :
@@ -342,11 +386,13 @@ def main(file_content):
 
     model.verif_model()
 
-    nbr_tour, mode_auto, model_checking = model.initialisation()
+    nbr_tour, mode_auto, model_checked = model.initialisation()
 
-    if model_checking:
-        model.check_quant(nbr_tour)
+    if model_checked:
+        res_quant, res_qual = model.model_checking(nbr_tour)
         model.current_state = model.initial_state
+        print(f"Resultats SMC quantitatif = {res_quant}")
+        print(f"Resultats SMC qualitatif = {res_qual}")
 
     if model.RL :
         V_new, model.adversaire = model.algo_it_valeurs()
