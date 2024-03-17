@@ -10,7 +10,7 @@ import click
 import copy
 
 
-class MDP:  
+class MDP:
     def __init__(self):
         self.initial_state = None
         self.current_state = None
@@ -20,7 +20,6 @@ class MDP:
         self.pos = None
         self.hist = []
         self.RL = None
-        self.model_checking = None
         self.gamma = 1/2
         self.eps = 1
         self.precision = 0.01
@@ -144,16 +143,17 @@ class MDP:
                 return(cle)
     
     
-    def avance(self, a = None):
+    def avance(self, a = None, model_checking = False):
         '''
         Fais un pas dans le MDP ou MC
         '''
         _, somme_proba = self.s_proba(a)
         self.current_state = self.prochain_etat(somme_proba)
-        if not self.model_checking :
+        if not model_checking :
             self.hist.append(self.current_state)
             self.recompense += self.states[self.current_state]
         return()            
+
 
     def initialisation(self):
        
@@ -168,8 +168,8 @@ class MDP:
 
         nbr_tour = click.prompt('Combien de tour voulez vous faire ? ', type=int)
         
-        self.model_checking = click.prompt('Faire modele checking ? [True/False]' , type = bool)
-        if self.model_checking :
+        model_checking = click.prompt('Faire modele checking ? [True/False]' , type = bool)
+        if model_checking :
             rep = click.prompt(f"Sur quelle etat dans {list(self.states.keys())} ? False pour arreter.")
             while rep != str(False) : 
                 self.checked_state.append(rep)
@@ -178,41 +178,38 @@ class MDP:
             self.erreur = click.prompt("Erreur ? ", type = float)
 
         mode_auto = click.prompt('Faire la simulation en mode auto ? [True/False]' , type = bool)
-        if mode_auto : 
-            self.RL = click.prompt("Faire de l'apprentissage par renforcement ? [True/False]", type = bool)
+        if mode_auto :
+            self.RL = click.prompt("Faire de l'apprentissage par renforcement pour que les choix réalisés soient optimales ? [True/False]", type = bool)
             if self.RL :
                 self.gamma = click.prompt("Valeur de gamma pour l'algorithme d'iteration de valeurs ? [<1]", type = float)
                 self.eps = click.prompt("Valeur de epsilon pour l'lgorithme d’itération de valeurs ? ", type = float)
-
-                V_new, self.adversaire = self.algo_it_valeurs()
-                print(f"Vn = {V_new}")
-                print(f"adversaire choisi = {self.adversaire}")
-        return(nbr_tour, mode_auto)
+           
+        return(nbr_tour, mode_auto, model_checking)
 
 
-    def check_quant(self):
+    def check_quant(self, nbr_tour):
         somme_proba = {k : 0 for k in self.checked_state}
 
         n = int(np.ceil(np.log(2)-np.log(self.erreur)/(2*self.precision)**2))
 
         for _ in range(n):
-            res = self.simulation(n, mode_auto=True)
+            res = self.simulation(nbr_tour, mode_auto=True, model_checking=True)
             somme_proba[res] +=1
         somme_proba = {k : v/n for k,v in somme_proba.items()}
         print(f"Estimation d'arriver dans les états checkés : {somme_proba}")
         return()
 
 
-    def simulation(self, nbr_tour, mode_auto = False ,plot = False, printer = False):
+    def simulation(self, nbr_tour, mode_auto = False, model_checking = False ,plot = False, printer = False):
         for _ in range(nbr_tour):
             a = self.presentation_suite(mode_auto)
             if not mode_auto :
                 a = input()
 
             if a == '':
-                self.avance()
+                self.avance(model_checking=model_checking)
             else:
-                self.avance(a)
+                self.avance(a = a, model_checking=model_checking)
             if plot :
                 self.plot_graph()
             if printer :
@@ -261,8 +258,8 @@ class MDP:
         plt.axis('off')
         plt.show()
         return()
-    
-    
+
+
     def verif_model(self):
         '''
         Verifie que les états et les actions sont bien déclarés dans le préambule. 
@@ -288,6 +285,7 @@ class MDP:
             if None in self.transitions[etat]:
                 if len(self.transitions[etat]) > 1:
                     raise ValueError(f"Il y a un melange entre MC et MDP dans l'etat {etat}, le fichier input comporte une erreur")
+
 
 
 class gramPrintListener(gramListener):
@@ -344,11 +342,16 @@ def main(file_content):
 
     model.verif_model()
 
-    nbr_tour, mode_auto = model.initialisation()
+    nbr_tour, mode_auto, model_checking = model.initialisation()
 
-    if model.model_checking:
-        model.check_quant()
+    if model_checking:
+        model.check_quant(nbr_tour)
         model.current_state = model.initial_state
+
+    if model.RL :
+        V_new, model.adversaire = model.algo_it_valeurs()
+        print(f"Vn = {V_new}")
+        print(f"adversaire choisi = {model.adversaire}")
 
     model.plot_graph()
     model.simulation(nbr_tour, mode_auto, plot = True, printer = True)
